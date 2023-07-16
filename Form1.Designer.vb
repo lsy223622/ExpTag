@@ -53,7 +53,6 @@ Partial Class Form1
         ' 
         ComboBox1.FlatStyle = FlatStyle.System
         ComboBox1.FormattingEnabled = True
-        ComboBox1.IntegralHeight = False
         ComboBox1.Location = New Point(200, 42)
         ComboBox1.MaxDropDownItems = 12
         ComboBox1.Name = "ComboBox1"
@@ -78,7 +77,8 @@ Partial Class Form1
         ' 
         ' ComboBox2
         ' 
-        ComboBox2.FormattingEnabled = True
+        ComboBox2.DropDownStyle = ComboBoxStyle.DropDownList
+        ComboBox2.FlatStyle = FlatStyle.System
         ComboBox2.ImeMode = ImeMode.Disable
         ComboBox2.Items.AddRange(New Object() {"分钟", "小时", "天", "周", "月"})
         ComboBox2.Location = New Point(560, 114)
@@ -210,10 +210,8 @@ Partial Class Form1
     End Sub
 
     Friend WithEvents Label1 As Label
-    Friend WithEvents ComboBox1 As ComboBox
     Friend WithEvents Label2 As Label
     Friend WithEvents TextBox1 As TextBox
-    Friend WithEvents ComboBox2 As ComboBox
     Friend WithEvents Label3 As Label
     Friend WithEvents DateTimePicker1 As DateTimePicker
     Friend WithEvents Button1 As Button
@@ -225,4 +223,6 @@ Partial Class Form1
     Friend WithEvents Button3 As Button
     Friend WithEvents Panel1 As Panel
     Friend WithEvents Button4 As Button
+    Private WithEvents ComboBox2 As ComboBox
+    Private WithEvents ComboBox1 As ComboBox
 End Class
