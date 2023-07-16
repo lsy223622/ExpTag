@@ -100,7 +100,7 @@ Public Class Form1
         Dim currentDateTime As DateTime = DateTimePicker1.Value
 
         ' 获取时间数量和单位
-        Dim timeNum As Integer = Integer.Parse(TextBox1.Text)
+        Dim timeNum As Integer = Val(TextBox1.Text)
         Dim unit As String = ComboBox2.SelectedItem.ToString()
 
         ' 根据单位选择合适的 Add 方法进行时间计算
