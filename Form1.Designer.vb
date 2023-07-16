@@ -53,7 +53,9 @@ Partial Class Form1
         ' 
         ComboBox1.FlatStyle = FlatStyle.System
         ComboBox1.FormattingEnabled = True
+        ComboBox1.IntegralHeight = False
         ComboBox1.Location = New Point(200, 42)
+        ComboBox1.MaxDropDownItems = 12
         ComboBox1.Name = "ComboBox1"
         ComboBox1.Size = New Size(340, 39)
         ComboBox1.TabIndex = 1
@@ -77,6 +79,7 @@ Partial Class Form1
         ' ComboBox2
         ' 
         ComboBox2.FormattingEnabled = True
+        ComboBox2.ImeMode = ImeMode.Disable
         ComboBox2.Items.AddRange(New Object() {"分钟", "小时", "天", "周", "月"})
         ComboBox2.Location = New Point(560, 114)
         ComboBox2.Name = "ComboBox2"
