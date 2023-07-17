@@ -1,4 +1,5 @@
-﻿Imports Microsoft.VisualBasic.FileIO
+﻿Imports System.Drawing.Imaging
+Imports Microsoft.VisualBasic.FileIO
 
 Public Class Form1
     Private ReadOnly csvData As New Dictionary(Of String, Tuple(Of Integer, String))
@@ -127,5 +128,46 @@ Public Class Form1
 
     Private Sub ComboBox2_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboBox2.SelectedIndexChanged
         UpdateTime()
+    End Sub
+
+    Private Sub Button3_Click(sender As Object, e As EventArgs) Handles Button3.Click
+        ' 创建一个位图对象，尺寸可以根据需要进行调整
+        Dim bitmap As New Bitmap(384, 256)
+        Using graphics As Graphics = Graphics.FromImage(bitmap)
+            ' 设置背景颜色为白色
+            graphics.Clear(Color.White)
+            ' 设置字体和字号
+            Dim font As New Font("微软雅黑", 11)
+            ' 设置文字颜色为黑色
+            Dim brush As New SolidBrush(Color.Black)
+            ' 设置抗锯齿模式
+            graphics.SmoothingMode = Drawing2D.SmoothingMode.AntiAlias
+            ' 在位图上绘制文字
+            graphics.DrawString(ComboBox1.Text, font, brush, New PointF(14, 30))
+            graphics.DrawString("启用：" & DateTimePicker1.Value.ToString("yyyy-MM-dd HH:mm"), font, brush, New PointF(14, 80))
+            graphics.DrawString("失效：" & DateTimePicker2.Value.ToString("yyyy-MM-dd HH:mm"), font, brush, New PointF(14, 130))
+            graphics.DrawString("签名：" & TextBox2.Text, font, brush, New PointF(14, 180))
+            ' 设置文字对齐方式
+            Dim format As New StringFormat With {
+                .Alignment = StringAlignment.Far
+            }
+            ' 绘制矩形框
+            Dim rect As New RectangleF(14, 30, 342, 100)
+            graphics.DrawString("有效期：" & TextBox1.Text & ComboBox2.Text, font, brush, rect, format)
+        End Using
+
+        ' 将位图保存为文件
+        Dim outputPath As String = "ExpTag" & DateTime.Now.ToString("yyyyMMddHHmmss") & ".png"
+        bitmap.Save(outputPath, ImageFormat.Png)
+    End Sub
+
+    Private Sub Button4_Click(sender As Object, e As EventArgs) Handles Button4.Click
+        Dim csvPath As String = "data.csv"
+
+        Try
+            Shell("explorer.exe " & csvPath, AppWinStyle.NormalFocus)
+        Catch ex As Exception
+            MsgBox("无法打开文件：" & ex.Message)
+        End Try
     End Sub
 End Class
