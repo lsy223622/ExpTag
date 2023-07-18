@@ -38,6 +38,8 @@ Partial Class Form1
         Button3 = New Button()
         Panel1 = New Panel()
         Button4 = New Button()
+        Button5 = New Button()
+        Button6 = New Button()
         SuspendLayout()
         ' 
         ' Label1
@@ -153,16 +155,16 @@ Partial Class Form1
         ' 
         TextBox2.Location = New Point(200, 354)
         TextBox2.Name = "TextBox2"
-        TextBox2.Size = New Size(290, 38)
+        TextBox2.Size = New Size(200, 38)
         TextBox2.TabIndex = 12
         ' 
         ' Button3
         ' 
-        Button3.Location = New Point(510, 350)
+        Button3.Location = New Point(410, 350)
         Button3.Name = "Button3"
-        Button3.Size = New Size(200, 46)
+        Button3.Size = New Size(100, 46)
         Button3.TabIndex = 13
-        Button3.Text = "生成"
+        Button3.Text = "保存"
         Button3.UseVisualStyleBackColor = True
         ' 
         ' Panel1
@@ -182,11 +184,31 @@ Partial Class Form1
         Button4.Text = "修改配置"
         Button4.UseVisualStyleBackColor = True
         ' 
+        ' Button5
+        ' 
+        Button5.Location = New Point(510, 350)
+        Button5.Name = "Button5"
+        Button5.Size = New Size(30, 46)
+        Button5.TabIndex = 16
+        Button5.Text = "…"
+        Button5.UseVisualStyleBackColor = True
+        ' 
+        ' Button6
+        ' 
+        Button6.Location = New Point(560, 350)
+        Button6.Name = "Button6"
+        Button6.Size = New Size(150, 46)
+        Button6.TabIndex = 17
+        Button6.Text = "打印"
+        Button6.UseVisualStyleBackColor = True
+        ' 
         ' Form1
         ' 
         AutoScaleDimensions = New SizeF(14F, 31F)
         AutoScaleMode = AutoScaleMode.Font
         ClientSize = New Size(774, 429)
+        Controls.Add(Button6)
+        Controls.Add(Button5)
         Controls.Add(Button4)
         Controls.Add(Panel1)
         Controls.Add(Button3)
@@ -204,7 +226,7 @@ Partial Class Form1
         Controls.Add(ComboBox1)
         Controls.Add(Label1)
         Name = "Form1"
-        Text = "ExpTag"
+        Text = "ExpTag 2.0"
         ResumeLayout(False)
         PerformLayout()
     End Sub
@@ -225,4 +247,6 @@ Partial Class Form1
     Friend WithEvents Button4 As Button
     Private WithEvents ComboBox2 As ComboBox
     Private WithEvents ComboBox1 As ComboBox
+    Friend WithEvents Button5 As Button
+    Friend WithEvents Button6 As Button
 End Class
