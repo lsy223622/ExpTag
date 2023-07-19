@@ -204,8 +204,8 @@ Partial Class Form1
         ' 
         ' Form1
         ' 
-        AutoScaleDimensions = New SizeF(14F, 31F)
-        AutoScaleMode = AutoScaleMode.Font
+        AutoScaleDimensions = New SizeF(192F, 192F)
+        AutoScaleMode = AutoScaleMode.Dpi
         ClientSize = New Size(774, 429)
         Controls.Add(Button6)
         Controls.Add(Button5)
@@ -225,7 +225,12 @@ Partial Class Form1
         Controls.Add(Label2)
         Controls.Add(ComboBox1)
         Controls.Add(Label1)
+        FormBorderStyle = FormBorderStyle.Fixed3D
+        MaximizeBox = False
+        MinimizeBox = False
         Name = "Form1"
+        SizeGripStyle = SizeGripStyle.Hide
+        StartPosition = FormStartPosition.CenterScreen
         Text = "ExpTag 2.0"
         ResumeLayout(False)
         PerformLayout()
