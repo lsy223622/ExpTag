@@ -50,8 +50,9 @@ Public Class Form1
 
     End Sub
 
-    Private Sub ComboBox1_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboBox1.SelectedIndexChanged
-        If trigger = 0 Then
+    Private Sub ComboBox1_TextChanged(sender As Object, e As EventArgs) Handles ComboBox1.TextChanged
+        Button2.Enabled = (ComboBox1.SelectedIndex <> -1)
+        If trigger = 0 And ComboBox1.SelectedIndex <> -1 Then
             trigger = 1
 
             ' 获取选中项的值
@@ -64,6 +65,7 @@ Public Class Form1
                 NumericUpDown1.Value = Val(data.Item1)
                 ComboBox2.SelectedItem = data.Item2
             End If
+
             trigger = 0
         End If
     End Sub
@@ -328,23 +330,51 @@ Public Class Form1
         Dim timeNum As Long = NumericUpDown1.Value
         Dim unit As String = ComboBox2.SelectedItem.ToString()
 
-        ' 根据单位选择合适的 Add 方法进行时间计算
+        ' 计算当前单位在 DateTimePicker2 上可以增加的最大数值
+        Dim maxNum As Long = CalculateMaxNum(currentDateTime, unit)
+
+        ' 判断是否会溢出上限
+        If timeNum > maxNum Then
+            MessageBox.Show("计算结果超出日期范围！", "警告", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+
+            Return
+        Else
+            ' 根据单位选择合适的 Add 方法进行时间计算
+            Select Case unit
+                Case "分钟"
+                    currentDateTime = currentDateTime.AddMinutes(timeNum)
+                Case "小时"
+                    currentDateTime = currentDateTime.AddHours(timeNum)
+                Case "天"
+                    currentDateTime = currentDateTime.AddDays(timeNum)
+                Case "周"
+                    currentDateTime = currentDateTime.AddDays(timeNum * 7)
+                Case "月"
+                    currentDateTime = currentDateTime.AddMonths(timeNum)
+            End Select
+
+            ' 更新 DateTimePicker2 的值
+            DateTimePicker2.Value = currentDateTime
+        End If
+    End Sub
+
+    Private Shared Function CalculateMaxNum(currentDateTime As Date, unit As String) As Long
+        ' 根据单位计算当前单位在 DateTimePicker2 上可以增加的最大数值
         Select Case unit
             Case "分钟"
-                currentDateTime = currentDateTime.AddMinutes(timeNum)
+                Return (New Date(9998, 12, 31) - currentDateTime).TotalMinutes
             Case "小时"
-                currentDateTime = currentDateTime.AddHours(timeNum)
+                Return (New Date(9998, 12, 31) - currentDateTime).TotalHours
             Case "天"
-                currentDateTime = currentDateTime.AddDays(timeNum)
+                Return (New Date(9998, 12, 31) - currentDateTime).TotalDays
             Case "周"
-                currentDateTime = currentDateTime.AddDays(timeNum * 7)
+                Return (New Date(9998, 12, 31) - currentDateTime).TotalDays / 7
             Case "月"
-                currentDateTime = currentDateTime.AddMonths(timeNum)
+                Return (New Date(9998, 12, 31).Year - currentDateTime.Year) * 12 + (New Date(9998, 12, 31).Month - currentDateTime.Month)
+            Case Else
+                Return 0
         End Select
-
-        ' 更新 DateTimePicker2 的值
-        DateTimePicker2.Value = currentDateTime
-    End Sub
+    End Function
 
     Private Shared Function SplitNumericValue(value As String, ByRef numericValue As Long, ByRef unitValue As String) As Boolean
         ' 假设数字部分和单位部分之间没有空格，例如："48小时"

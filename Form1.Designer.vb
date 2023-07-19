@@ -212,7 +212,7 @@ Partial Class Form1
         ' NumericUpDown1
         ' 
         NumericUpDown1.Location = New Point(200, 114)
-        NumericUpDown1.Maximum = New [Decimal](New Integer() {90000, 0, 0, 0})
+        NumericUpDown1.Maximum = New [Decimal](New Integer() {1410065407, 2, 0, 0})
         NumericUpDown1.Name = "NumericUpDown1"
         NumericUpDown1.Size = New Size(340, 38)
         NumericUpDown1.TabIndex = 18
