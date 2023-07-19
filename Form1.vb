@@ -1,13 +1,14 @@
 ﻿Imports System.Drawing.Imaging
 Imports System.Drawing.Printing
-Imports System.Net.Security
 Imports Microsoft.VisualBasic.FileIO
 
 Public Class Form1
-    Private ReadOnly csvData As New Dictionary(Of String, Tuple(Of Integer, String))
+    Private ReadOnly csvData As New Dictionary(Of String, Tuple(Of Long, String))
     Private trigger As Integer = 0
 
     Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+        trigger = 0
+
         ' 指定CSV文件的路径
         Dim filePath As String = "data.csv"
 
@@ -27,10 +28,10 @@ Public Class Form1
                     Dim value2 As String = fields(1)
 
                     ' 拆分数字部分和单位部分
-                    Dim numericValue As Integer = 0
+                    Dim numericValue As Long = 0
                     Dim unitValue As String = ""
                     If SplitNumericValue(value2, numericValue, unitValue) Then
-                        Dim data As Tuple(Of Integer, String) = Tuple.Create(numericValue, unitValue)
+                        Dim data As Tuple(Of Long, String) = Tuple.Create(numericValue, unitValue)
                         csvData.Add(key, data)
                         ComboBox1.Items.Add(key)
                     End If
@@ -45,6 +46,8 @@ Public Class Form1
             ComboBox1.SelectedIndex = 0
         End If
 
+        DateTimePicker2.MinDate = DateTimePicker1.Value
+
     End Sub
 
     Private Sub ComboBox1_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboBox1.SelectedIndexChanged
@@ -55,11 +58,10 @@ Public Class Form1
             Dim selectedValue As String = ComboBox1.SelectedItem.ToString()
 
             ' 根据选中项的值查找对应行的其他字段数据
-            Dim data As Tuple(Of Integer, String) = Nothing
+            Dim data As Tuple(Of Long, String) = Nothing
             If csvData.TryGetValue(selectedValue, data) Then
-                ' 在这里可以使用其他字段数据做进一步的处理或显示
-                ' 例如：将第二个字段的数字部分显示在文本框中，将单位部分显示在ComboBox2中
-                TextBox1.Text = data.Item1.ToString()
+                ' 将第二个字段的数字部分显示在文本框中，将单位部分显示在ComboBox2中
+                NumericUpDown1.Value = Val(data.Item1)
                 ComboBox2.SelectedItem = data.Item2
             End If
             trigger = 0
@@ -76,7 +78,7 @@ Public Class Form1
         End Try
     End Sub
 
-    Private Sub TextBox1_TextChanged(sender As Object, e As EventArgs) Handles TextBox1.TextChanged
+    Private Sub NumericUpDown1_TextChanged(sender As Object, e As EventArgs) Handles NumericUpDown1.TextChanged
         If trigger = 0 Then
             trigger = 2
 
@@ -101,6 +103,11 @@ Public Class Form1
     End Sub
 
     Private Sub DateTimePicker1_ValueChanged(sender As Object, e As EventArgs) Handles DateTimePicker1.ValueChanged
+        If DateTimePicker2.Value < DateTimePicker1.Value Then
+            DateTimePicker2.Value = DateTimePicker1.Value
+        End If
+        DateTimePicker2.MinDate = DateTimePicker1.Value
+
         If trigger = 0 Then
             trigger = 4
 
@@ -116,25 +123,29 @@ Public Class Form1
         If trigger = 0 Then
             trigger = 5
 
-            DateTimePicker1.Value = DateTime.Now
+            DateTimePicker1.Value = Date.Now
             trigger = 0
         End If
     End Sub
 
     Private Sub DateTimePicker2_ValueChanged(sender As Object, e As EventArgs) Handles DateTimePicker2.ValueChanged
+        If DateTimePicker2.Value < DateTimePicker1.Value Then
+            DateTimePicker1.Value = DateTimePicker2.Value
+        End If
+
         If trigger = 0 Then
             trigger = 6
 
             ' 获取 DateTimePicker2 和 DateTimePicker1 的值
-            Dim dateTime2 As DateTime = DateTimePicker2.Value
-            Dim dateTime1 As DateTime = DateTimePicker1.Value
+            Dim dateTime2 As Date = DateTimePicker2.Value
+            Dim dateTime1 As Date = DateTimePicker1.Value
 
             ' 获取时间差（以分钟为单位）
             Dim timeSpan As TimeSpan = TimeSpan.FromMinutes(Math.Round((dateTime2 - dateTime1).TotalMinutes))
 
             ' 根据时间差选择适当的单位
             Dim unit As String
-            Dim value As Double
+            Dim value As Long
             If timeSpan.TotalDays >= 30 AndAlso timeSpan.TotalDays Mod 30 = 0 Then
                 unit = "月"
                 value = timeSpan.TotalDays / 30
@@ -152,8 +163,8 @@ Public Class Form1
                 value = timeSpan.TotalMinutes
             End If
 
-            ' 更新 TextBox1 和 ComboBox2
-            TextBox1.Text = value.ToString() ' 获取时间差的值，并更新到 TextBox1
+            ' 更新 NumericUpdown1 和 ComboBox2
+            NumericUpDown1.Value = value ' 获取时间差的值，并更新到 NumericUpdown1
             ComboBox2.SelectedItem = unit ' 更新 ComboBox2 的单位部分
             trigger = 0
         End If
@@ -163,15 +174,20 @@ Public Class Form1
         If trigger = 0 Then
             trigger = 7
 
-            ' 获取选中项的值
-            Dim selectedValue As String = ComboBox1.SelectedItem.ToString()
+            Dim comboValue As String
+            If ComboBox1.SelectedIndex <> -1 Then
+                ' 获取选中项的值
+                comboValue = ComboBox1.SelectedItem.ToString()
+            Else
+                ' 使用自定义输入
+                comboValue = ComboBox1.Text
+            End If
 
             ' 根据选中项的值查找对应行的其他字段数据
-            Dim data As Tuple(Of Integer, String) = Nothing
-            If csvData.TryGetValue(selectedValue, data) Then
-                ' 在这里可以使用其他字段数据做进一步的处理或显示
-                ' 例如：将第二个字段的数字部分显示在文本框中，将单位部分显示在ComboBox2中
-                TextBox1.Text = data.Item1.ToString()
+            Dim data As Tuple(Of Long, String) = Nothing
+            If csvData.TryGetValue(comboValue, data) Then
+                ' 将第二个字段的数字部分显示在 NumericUpdown1 中，将单位部分显示在 ComboBox2 中
+                NumericUpDown1.Value = Val(data.Item1)
                 ComboBox2.SelectedItem = data.Item2
             End If
             trigger = 0
@@ -201,16 +217,16 @@ Public Class Form1
             }
             ' 绘制矩形框
             Dim rect As New RectangleF(14, 30, 342, 100)
-            graphics.DrawString("有效期：" & TextBox1.Text & ComboBox2.Text, font, brush, rect, format)
+            graphics.DrawString("有效期：" & Str(NumericUpDown1.Value) & ComboBox2.Text, font, brush, rect, format)
         End Using
 
         ' 将位图保存为文件
-        Dim outputPath As String = "ExpTag" & DateTime.Now.ToString("yyyyMMddHHmmss") & ".png"
+        Dim outputPath As String = "ExpTag" & Date.Now.ToString("yyyyMMddHHmmss") & ".png"
         bitmap.Save(outputPath, ImageFormat.Png)
     End Sub
 
     Private Sub Button5_Click(sender As Object, e As EventArgs) Handles Button5.Click
-        ' 创建SaveFileDialog对象并设置相关属性
+        ' 创建 SaveFileDialog 对象并设置相关属性
         Dim saveFileDialog As New SaveFileDialog With {
             .Filter = "PNG图像文件 (*.png)|*.png",
             .FilterIndex = 1,
@@ -220,7 +236,7 @@ Public Class Form1
         ' 设置默认的文件名为当前日期和时间
         Dim fileName As String = "ExpTag" & DateTime.Now.ToString("yyyyMMddHHmmss") ' 格式化为"yyyyMMdd_HHmmss"
 
-        ' 设置SaveFileDialog的默认文件名
+        ' 设置 SaveFileDialog 的默认文件名
         saveFileDialog.FileName = fileName
 
         ' 如果用户点击了保存按钮
@@ -251,7 +267,7 @@ Public Class Form1
             }
                 ' 绘制矩形框
                 Dim rect As New RectangleF(14, 30, 342, 100)
-                graphics.DrawString("有效期：" & TextBox1.Text & ComboBox2.Text, font, brush, rect, format)
+                graphics.DrawString("有效期：" & Str(NumericUpDown1.Value) & ComboBox2.Text, font, brush, rect, format)
             End Using
             bitmap.Save(filePath, ImageFormat.Png)
         End If
@@ -280,36 +296,36 @@ Public Class Form1
             }
             ' 绘制矩形框
             Dim rect As New RectangleF(14, 30, 342, 100)
-            graphics.DrawString("有效期：" & TextBox1.Text & ComboBox2.Text, font, brush, rect, format)
+            graphics.DrawString("有效期：" & Str(NumericUpDown1.Value) & ComboBox2.Text, font, brush, rect, format)
         End Using
 
-        ' 创建PrintDocument对象
+        ' 创建 PrintDocument 对象
         Dim printDocument As New PrintDocument()
 
-        ' 设置PrintDocument的打印页面内容
+        ' 设置 PrintDocument 的打印页面内容
         AddHandler printDocument.PrintPage, Sub(senderObj As Object, args As PrintPageEventArgs)
                                                 args.Graphics.DrawImage(bitmap, 0, 0) ' 在打印页面上绘制图像
                                                 args.HasMorePages = False ' 没有更多的页面需要打印
                                             End Sub
 
-        ' 创建PrintDialog对象并设置PrintDocument
+        ' 创建 PrintDialog 对象并设置 PrintDocument
         Dim printDialog As New PrintDialog With {
             .Document = printDocument
         }
 
         ' 如果用户点击了打印按钮
         If printDialog.ShowDialog() = DialogResult.OK Then
-            ' 调用PrintDocument的Print方法开始打印
+            ' 调用 PrintDocument 的 Print 方法开始打印
             printDocument.Print()
         End If
     End Sub
 
     Private Sub UpdateTime()
         ' 获取当前的日期和时间
-        Dim currentDateTime As DateTime = DateTimePicker1.Value
+        Dim currentDateTime As Date = DateTimePicker1.Value
 
         ' 获取时间数量和单位
-        Dim timeNum As Integer = Val(TextBox1.Text)
+        Dim timeNum As Long = NumericUpDown1.Value
         Dim unit As String = ComboBox2.SelectedItem.ToString()
 
         ' 根据单位选择合适的 Add 方法进行时间计算
@@ -330,7 +346,7 @@ Public Class Form1
         DateTimePicker2.Value = currentDateTime
     End Sub
 
-    Private Shared Function SplitNumericValue(value As String, ByRef numericValue As Integer, ByRef unitValue As String) As Boolean
+    Private Shared Function SplitNumericValue(value As String, ByRef numericValue As Long, ByRef unitValue As String) As Boolean
         ' 假设数字部分和单位部分之间没有空格，例如："48小时"
         Dim index As Integer = 0
         While index < value.Length AndAlso Char.IsDigit(value(index))
@@ -338,7 +354,7 @@ Public Class Form1
         End While
 
         If index > 0 AndAlso index < value.Length Then
-            numericValue = Integer.Parse(value.Substring(0, index))
+            numericValue = Long.Parse(value.Substring(0, index))
             unitValue = value.Substring(index)
             Return True
         End If

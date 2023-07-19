@@ -22,10 +22,10 @@ Partial Class Form1
     'Do not modify it using the code editor.
     <System.Diagnostics.DebuggerStepThrough()>
     Private Sub InitializeComponent()
+        components = New ComponentModel.Container()
         Label1 = New Label()
         ComboBox1 = New ComboBox()
         Label2 = New Label()
-        TextBox1 = New TextBox()
         ComboBox2 = New ComboBox()
         Label3 = New Label()
         DateTimePicker1 = New DateTimePicker()
@@ -40,6 +40,9 @@ Partial Class Form1
         Button4 = New Button()
         Button5 = New Button()
         Button6 = New Button()
+        NumericUpDown1 = New NumericUpDown()
+        ToolTip1 = New ToolTip(components)
+        CType(NumericUpDown1, ComponentModel.ISupportInitialize).BeginInit()
         SuspendLayout()
         ' 
         ' Label1
@@ -47,9 +50,9 @@ Partial Class Form1
         Label1.AutoSize = True
         Label1.Location = New Point(60, 48)
         Label1.Name = "Label1"
-        Label1.Size = New Size(62, 31)
+        Label1.Size = New Size(110, 31)
         Label1.TabIndex = 0
-        Label1.Text = "名称"
+        Label1.Text = "物品名称"
         ' 
         ' ComboBox1
         ' 
@@ -60,6 +63,7 @@ Partial Class Form1
         ComboBox1.Name = "ComboBox1"
         ComboBox1.Size = New Size(340, 39)
         ComboBox1.TabIndex = 1
+        ToolTip1.SetToolTip(ComboBox1, "在下拉列表中选择预设物品或手动输入物品名称。")
         ' 
         ' Label2
         ' 
@@ -69,13 +73,6 @@ Partial Class Form1
         Label2.Size = New Size(86, 31)
         Label2.TabIndex = 2
         Label2.Text = "有效期"
-        ' 
-        ' TextBox1
-        ' 
-        TextBox1.Location = New Point(200, 114)
-        TextBox1.Name = "TextBox1"
-        TextBox1.Size = New Size(340, 38)
-        TextBox1.TabIndex = 3
         ' 
         ' ComboBox2
         ' 
@@ -87,6 +84,7 @@ Partial Class Form1
         ComboBox2.Name = "ComboBox2"
         ComboBox2.Size = New Size(150, 39)
         ComboBox2.TabIndex = 4
+        ToolTip1.SetToolTip(ComboBox2, "选择物品有效期的时间单位。")
         ' 
         ' Label3
         ' 
@@ -105,6 +103,7 @@ Partial Class Form1
         DateTimePicker1.Name = "DateTimePicker1"
         DateTimePicker1.Size = New Size(340, 38)
         DateTimePicker1.TabIndex = 6
+        ToolTip1.SetToolTip(DateTimePicker1, "选择物品的启用时间。默认为程序启动时间。")
         ' 
         ' Button1
         ' 
@@ -113,6 +112,7 @@ Partial Class Form1
         Button1.Size = New Size(150, 46)
         Button1.TabIndex = 7
         Button1.Text = "现在"
+        ToolTip1.SetToolTip(Button1, "将启用时间重置为当前时间。")
         Button1.UseVisualStyleBackColor = True
         ' 
         ' Label4
@@ -132,6 +132,7 @@ Partial Class Form1
         DateTimePicker2.Name = "DateTimePicker2"
         DateTimePicker2.Size = New Size(340, 38)
         DateTimePicker2.TabIndex = 9
+        ToolTip1.SetToolTip(DateTimePicker2, "选择物品的失效时间。默认根据有效期自动计算，如手动修改则自动计算有效期。")
         ' 
         ' Button2
         ' 
@@ -140,6 +141,7 @@ Partial Class Form1
         Button2.Size = New Size(150, 46)
         Button2.TabIndex = 10
         Button2.Text = "重置"
+        ToolTip1.SetToolTip(Button2, "将有效期重置为物品预设值。")
         Button2.UseVisualStyleBackColor = True
         ' 
         ' Label5
@@ -157,6 +159,7 @@ Partial Class Form1
         TextBox2.Name = "TextBox2"
         TextBox2.Size = New Size(200, 38)
         TextBox2.TabIndex = 12
+        ToolTip1.SetToolTip(TextBox2, "输入使用者签名。")
         ' 
         ' Button3
         ' 
@@ -165,6 +168,7 @@ Partial Class Form1
         Button3.Size = New Size(100, 46)
         Button3.TabIndex = 13
         Button3.Text = "保存"
+        ToolTip1.SetToolTip(Button3, "直接保存图片到软件目录。")
         Button3.UseVisualStyleBackColor = True
         ' 
         ' Panel1
@@ -182,6 +186,7 @@ Partial Class Form1
         Button4.Size = New Size(150, 46)
         Button4.TabIndex = 15
         Button4.Text = "修改配置"
+        ToolTip1.SetToolTip(Button4, "修改预设的物品名称-有效期列表（软件目录下 data.csv 文件）")
         Button4.UseVisualStyleBackColor = True
         ' 
         ' Button5
@@ -191,6 +196,7 @@ Partial Class Form1
         Button5.Size = New Size(30, 46)
         Button5.TabIndex = 16
         Button5.Text = "…"
+        ToolTip1.SetToolTip(Button5, "另存为（选择保存位置）")
         Button5.UseVisualStyleBackColor = True
         ' 
         ' Button6
@@ -200,13 +206,24 @@ Partial Class Form1
         Button6.Size = New Size(150, 46)
         Button6.TabIndex = 17
         Button6.Text = "打印"
+        ToolTip1.SetToolTip(Button6, "直接打印标签。")
         Button6.UseVisualStyleBackColor = True
+        ' 
+        ' NumericUpDown1
+        ' 
+        NumericUpDown1.Location = New Point(200, 114)
+        NumericUpDown1.Maximum = New [Decimal](New Integer() {90000, 0, 0, 0})
+        NumericUpDown1.Name = "NumericUpDown1"
+        NumericUpDown1.Size = New Size(340, 38)
+        NumericUpDown1.TabIndex = 18
+        ToolTip1.SetToolTip(NumericUpDown1, "输入物品有效期的数字部分。")
         ' 
         ' Form1
         ' 
         AutoScaleDimensions = New SizeF(192F, 192F)
         AutoScaleMode = AutoScaleMode.Dpi
         ClientSize = New Size(774, 429)
+        Controls.Add(NumericUpDown1)
         Controls.Add(Button6)
         Controls.Add(Button5)
         Controls.Add(Button4)
@@ -221,7 +238,6 @@ Partial Class Form1
         Controls.Add(DateTimePicker1)
         Controls.Add(Label3)
         Controls.Add(ComboBox2)
-        Controls.Add(TextBox1)
         Controls.Add(Label2)
         Controls.Add(ComboBox1)
         Controls.Add(Label1)
@@ -232,18 +248,16 @@ Partial Class Form1
         SizeGripStyle = SizeGripStyle.Hide
         StartPosition = FormStartPosition.CenterScreen
         Text = "ExpTag 2.0"
+        CType(NumericUpDown1, ComponentModel.ISupportInitialize).EndInit()
         ResumeLayout(False)
         PerformLayout()
     End Sub
 
     Friend WithEvents Label1 As Label
     Friend WithEvents Label2 As Label
-    Friend WithEvents TextBox1 As TextBox
     Friend WithEvents Label3 As Label
-    Friend WithEvents DateTimePicker1 As DateTimePicker
     Friend WithEvents Button1 As Button
     Friend WithEvents Label4 As Label
-    Friend WithEvents DateTimePicker2 As DateTimePicker
     Friend WithEvents Button2 As Button
     Friend WithEvents Label5 As Label
     Friend WithEvents TextBox2 As TextBox
@@ -254,4 +268,8 @@ Partial Class Form1
     Private WithEvents ComboBox1 As ComboBox
     Friend WithEvents Button5 As Button
     Friend WithEvents Button6 As Button
+    Friend WithEvents NumericUpDown1 As NumericUpDown
+    Friend WithEvents ToolTip1 As ToolTip
+    Private WithEvents DateTimePicker1 As DateTimePicker
+    Private WithEvents DateTimePicker2 As DateTimePicker
 End Class

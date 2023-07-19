@@ -6,12 +6,12 @@
     <StartupObject>Sub Main</StartupObject>
     <UseWindowsForms>true</UseWindowsForms>
     <MyType>WindowsForms</MyType>
-    <Version>2.0.1</Version>
+    <Version>2.1.0</Version>
     <Authors>lsy223622</Authors>
     <Company />
     <PackageProjectUrl>https://github.com/lsy223622/ExpTag</PackageProjectUrl>
-    <AssemblyVersion>2.0.1.0</AssemblyVersion>
-    <FileVersion>2.0.1.0</FileVersion>
+    <AssemblyVersion>2.1.0.0</AssemblyVersion>
+    <FileVersion>2.1.0.0</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
