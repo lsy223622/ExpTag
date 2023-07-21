@@ -42,7 +42,11 @@ Partial Class Form1
         Button6 = New Button()
         NumericUpDown1 = New NumericUpDown()
         ToolTip1 = New ToolTip(components)
+        PictureBox1 = New PictureBox()
+        Button7 = New Button()
+        Label6 = New Label()
         CType(NumericUpDown1, ComponentModel.ISupportInitialize).BeginInit()
+        CType(PictureBox1, ComponentModel.ISupportInitialize).BeginInit()
         SuspendLayout()
         ' 
         ' Label1
@@ -109,7 +113,7 @@ Partial Class Form1
         ' 
         Button1.Location = New Point(560, 182)
         Button1.Name = "Button1"
-        Button1.Size = New Size(150, 46)
+        Button1.Size = New Size(75, 46)
         Button1.TabIndex = 7
         Button1.Text = "现在"
         ToolTip1.SetToolTip(Button1, "将启用时间重置为当前时间。")
@@ -136,9 +140,9 @@ Partial Class Form1
         ' 
         ' Button2
         ' 
-        Button2.Location = New Point(560, 254)
+        Button2.Location = New Point(635, 182)
         Button2.Name = "Button2"
-        Button2.Size = New Size(150, 46)
+        Button2.Size = New Size(75, 46)
         Button2.TabIndex = 10
         Button2.Text = "重置"
         ToolTip1.SetToolTip(Button2, "将有效期重置为物品预设值。")
@@ -218,11 +222,43 @@ Partial Class Form1
         NumericUpDown1.TabIndex = 18
         ToolTip1.SetToolTip(NumericUpDown1, "输入物品有效期的数字部分。")
         ' 
+        ' PictureBox1
+        ' 
+        PictureBox1.Enabled = False
+        PictureBox1.Location = New Point(784, 42)
+        PictureBox1.Name = "PictureBox1"
+        PictureBox1.Size = New Size(384, 256)
+        PictureBox1.TabIndex = 19
+        PictureBox1.TabStop = False
+        ' 
+        ' Button7
+        ' 
+        Button7.Location = New Point(560, 254)
+        Button7.Name = "Button7"
+        Button7.Size = New Size(150, 46)
+        Button7.TabIndex = 20
+        Button7.Text = "预览 >>"
+        Button7.UseVisualStyleBackColor = True
+        ' 
+        ' Label6
+        ' 
+        Label6.AutoSize = True
+        Label6.Font = New Font("Microsoft YaHei UI", 10F, FontStyle.Regular, GraphicsUnit.Point)
+        Label6.ForeColor = SystemColors.ControlDark
+        Label6.Location = New Point(838, 354)
+        Label6.Name = "Label6"
+        Label6.Size = New Size(285, 35)
+        Label6.TabIndex = 21
+        Label6.Text = "ExpTag by lsy223622"
+        ' 
         ' Form1
         ' 
         AutoScaleDimensions = New SizeF(192F, 192F)
         AutoScaleMode = AutoScaleMode.Dpi
         ClientSize = New Size(774, 429)
+        Controls.Add(Label6)
+        Controls.Add(Button7)
+        Controls.Add(PictureBox1)
         Controls.Add(NumericUpDown1)
         Controls.Add(Button6)
         Controls.Add(Button5)
@@ -247,8 +283,9 @@ Partial Class Form1
         Name = "Form1"
         SizeGripStyle = SizeGripStyle.Hide
         StartPosition = FormStartPosition.CenterScreen
-        Text = "ExpTag 2.0"
+        Text = "ExpTag 3.0"
         CType(NumericUpDown1, ComponentModel.ISupportInitialize).EndInit()
+        CType(PictureBox1, ComponentModel.ISupportInitialize).EndInit()
         ResumeLayout(False)
         PerformLayout()
     End Sub
@@ -272,4 +309,7 @@ Partial Class Form1
     Friend WithEvents ToolTip1 As ToolTip
     Private WithEvents DateTimePicker1 As DateTimePicker
     Private WithEvents DateTimePicker2 As DateTimePicker
+    Friend WithEvents PictureBox1 As PictureBox
+    Friend WithEvents Button7 As Button
+    Friend WithEvents Label6 As Label
 End Class

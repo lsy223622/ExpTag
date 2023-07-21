@@ -1,10 +1,12 @@
-﻿Imports System.Drawing.Imaging
+﻿Imports System.Drawing.Drawing2D
+Imports System.Drawing.Imaging
 Imports System.Drawing.Printing
 Imports Microsoft.VisualBasic.FileIO
 
 Public Class Form1
     Private ReadOnly csvData As New Dictionary(Of String, Tuple(Of Long, String))
     Private trigger As Integer = 0
+    Private ReadOnly bitmap As New Bitmap(384, 256)
 
     Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         trigger = 0
@@ -68,6 +70,7 @@ Public Class Form1
 
             trigger = 0
         End If
+        GenerateBitmap()
     End Sub
 
     Private Sub Button4_Click(sender As Object, e As EventArgs) Handles Button4.Click
@@ -85,6 +88,7 @@ Public Class Form1
             trigger = 2
 
             UpdateTime()
+            GenerateBitmap()
             trigger = 0
 
         ElseIf trigger = 1 Or trigger = 7 Then
@@ -97,6 +101,7 @@ Public Class Form1
             trigger = 3
 
             UpdateTime()
+            GenerateBitmap()
             trigger = 0
 
         ElseIf trigger = 1 Or trigger = 7 Then
@@ -114,6 +119,7 @@ Public Class Form1
             trigger = 4
 
             UpdateTime()
+            GenerateBitmap()
             trigger = 0
 
         ElseIf trigger = 5 Then
@@ -126,6 +132,33 @@ Public Class Form1
             trigger = 5
 
             DateTimePicker1.Value = Date.Now
+            GenerateBitmap()
+            trigger = 0
+        End If
+    End Sub
+
+    Private Sub Button2_Click(sender As Object, e As EventArgs) Handles Button2.Click
+        If trigger = 0 Then
+            trigger = 7
+
+            Dim comboValue As String
+            If ComboBox1.SelectedIndex <> -1 Then
+                ' 获取选中项的值
+                comboValue = ComboBox1.SelectedItem.ToString()
+            Else
+                ' 使用自定义输入
+                comboValue = ComboBox1.Text
+            End If
+
+            ' 根据选中项的值查找对应行的其他字段数据
+            Dim data As Tuple(Of Long, String) = Nothing
+            If csvData.TryGetValue(comboValue, data) Then
+                ' 将第二个字段的数字部分显示在 NumericUpdown1 中，将单位部分显示在 ComboBox2 中
+                NumericUpDown1.Value = Val(data.Item1)
+                ComboBox2.SelectedItem = data.Item2
+            End If
+
+            GenerateBitmap()
             trigger = 0
         End If
     End Sub
@@ -168,60 +201,28 @@ Public Class Form1
             ' 更新 NumericUpdown1 和 ComboBox2
             NumericUpDown1.Value = value ' 获取时间差的值，并更新到 NumericUpdown1
             ComboBox2.SelectedItem = unit ' 更新 ComboBox2 的单位部分
+
+            GenerateBitmap()
             trigger = 0
         End If
     End Sub
 
-    Private Sub Button2_Click(sender As Object, e As EventArgs) Handles Button2.Click
-        If trigger = 0 Then
-            trigger = 7
-
-            Dim comboValue As String
-            If ComboBox1.SelectedIndex <> -1 Then
-                ' 获取选中项的值
-                comboValue = ComboBox1.SelectedItem.ToString()
-            Else
-                ' 使用自定义输入
-                comboValue = ComboBox1.Text
-            End If
-
-            ' 根据选中项的值查找对应行的其他字段数据
-            Dim data As Tuple(Of Long, String) = Nothing
-            If csvData.TryGetValue(comboValue, data) Then
-                ' 将第二个字段的数字部分显示在 NumericUpdown1 中，将单位部分显示在 ComboBox2 中
-                NumericUpDown1.Value = Val(data.Item1)
-                ComboBox2.SelectedItem = data.Item2
-            End If
-            trigger = 0
+    Private Sub Button7_Click(sender As Object, e As EventArgs) Handles Button7.Click
+        If PictureBox1.Enabled Then
+            PictureBox1.Image = Nothing
+            Panel1.Width = 740
+            Me.Width = 804
+            Button7.Text = "预览 >>"
+        Else
+            Me.Width = 1268
+            Panel1.Width = 1200
+            PictureBox1.Image = GetRoundedImage(bitmap, 30)
+            Button7.Text = "<< 隐藏"
         End If
+        PictureBox1.Enabled = Not PictureBox1.Enabled
     End Sub
 
     Private Sub Button3_Click(sender As Object, e As EventArgs) Handles Button3.Click
-        ' 创建一个位图对象，尺寸可以根据需要进行调整
-        Dim bitmap As New Bitmap(384, 256)
-        Using graphics As Graphics = Graphics.FromImage(bitmap)
-            ' 设置背景颜色为白色
-            graphics.Clear(Color.White)
-            ' 设置字体和字号
-            Dim font As New Font("微软雅黑", 11)
-            ' 设置文字颜色为黑色
-            Dim brush As New SolidBrush(Color.Black)
-            ' 设置抗锯齿模式
-            graphics.SmoothingMode = Drawing2D.SmoothingMode.AntiAlias
-            ' 在位图上绘制文字
-            graphics.DrawString(ComboBox1.Text, font, brush, New PointF(14, 30))
-            graphics.DrawString("启用：" & DateTimePicker1.Value.ToString("yyyy-MM-dd HH:mm"), font, brush, New PointF(14, 80))
-            graphics.DrawString("失效：" & DateTimePicker2.Value.ToString("yyyy-MM-dd HH:mm"), font, brush, New PointF(14, 130))
-            graphics.DrawString("签名：" & TextBox2.Text, font, brush, New PointF(14, 180))
-            ' 设置文字对齐方式
-            Dim format As New StringFormat With {
-                .Alignment = StringAlignment.Far
-            }
-            ' 绘制矩形框
-            Dim rect As New RectangleF(14, 30, 342, 100)
-            graphics.DrawString("有效期：" & Str(NumericUpDown1.Value) & ComboBox2.Text, font, brush, rect, format)
-        End Using
-
         ' 将位图保存为文件
         Dim outputPath As String = "ExpTag" & Date.Now.ToString("yyyyMMddHHmmss") & ".png"
         bitmap.Save(outputPath, ImageFormat.Png)
@@ -246,61 +247,12 @@ Public Class Form1
             ' 获取用户选择的文件路径
             Dim filePath As String = saveFileDialog.FileName
 
-            ' 进行文件保存操作
-            ' 创建一个位图对象，尺寸可以根据需要进行调整
-            Dim bitmap As New Bitmap(384, 256)
-            Using graphics As Graphics = Graphics.FromImage(bitmap)
-                ' 设置背景颜色为白色
-                graphics.Clear(Color.White)
-                ' 设置字体和字号
-                Dim font As New Font("微软雅黑", 11)
-                ' 设置文字颜色为黑色
-                Dim brush As New SolidBrush(Color.Black)
-                ' 设置抗锯齿模式
-                graphics.SmoothingMode = Drawing2D.SmoothingMode.AntiAlias
-                ' 在位图上绘制文字
-                graphics.DrawString(ComboBox1.Text, font, brush, New PointF(14, 30))
-                graphics.DrawString("启用：" & DateTimePicker1.Value.ToString("yyyy-MM-dd HH:mm"), font, brush, New PointF(14, 80))
-                graphics.DrawString("失效：" & DateTimePicker2.Value.ToString("yyyy-MM-dd HH:mm"), font, brush, New PointF(14, 130))
-                graphics.DrawString("签名：" & TextBox2.Text, font, brush, New PointF(14, 180))
-                ' 设置文字对齐方式
-                Dim format As New StringFormat With {
-                .Alignment = StringAlignment.Far
-            }
-                ' 绘制矩形框
-                Dim rect As New RectangleF(14, 30, 342, 100)
-                graphics.DrawString("有效期：" & Str(NumericUpDown1.Value) & ComboBox2.Text, font, brush, rect, format)
-            End Using
+            GenerateBitmap()
             bitmap.Save(filePath, ImageFormat.Png)
         End If
     End Sub
 
     Private Sub Button6_Click(sender As Object, e As EventArgs) Handles Button6.Click
-        ' 创建一个位图对象，尺寸可以根据需要进行调整
-        Dim bitmap As New Bitmap(384, 256)
-        Using graphics As Graphics = Graphics.FromImage(bitmap)
-            ' 设置背景颜色为白色
-            graphics.Clear(Color.White)
-            ' 设置字体和字号
-            Dim font As New Font("微软雅黑", 11)
-            ' 设置文字颜色为黑色
-            Dim brush As New SolidBrush(Color.Black)
-            ' 设置抗锯齿模式
-            graphics.SmoothingMode = Drawing2D.SmoothingMode.AntiAlias
-            ' 在位图上绘制文字
-            graphics.DrawString(ComboBox1.Text, font, brush, New PointF(14, 30))
-            graphics.DrawString("启用：" & DateTimePicker1.Value.ToString("yyyy-MM-dd HH:mm"), font, brush, New PointF(14, 80))
-            graphics.DrawString("失效：" & DateTimePicker2.Value.ToString("yyyy-MM-dd HH:mm"), font, brush, New PointF(14, 130))
-            graphics.DrawString("签名：" & TextBox2.Text, font, brush, New PointF(14, 180))
-            ' 设置文字对齐方式
-            Dim format As New StringFormat With {
-                .Alignment = StringAlignment.Far
-            }
-            ' 绘制矩形框
-            Dim rect As New RectangleF(14, 30, 342, 100)
-            graphics.DrawString("有效期：" & Str(NumericUpDown1.Value) & ComboBox2.Text, font, brush, rect, format)
-        End Using
-
         ' 创建 PrintDocument 对象
         Dim printDocument As New PrintDocument()
 
@@ -390,5 +342,50 @@ Public Class Form1
         End If
 
         Return False
+    End Function
+
+    Private Sub GenerateBitmap()
+        Using graphics As Graphics = Graphics.FromImage(bitmap)
+            ' 设置背景颜色为白色
+            graphics.Clear(Color.White)
+            ' 设置字体和字号
+            Dim font As New Font("微软雅黑", 11)
+            ' 设置文字颜色为黑色
+            Dim brush As New SolidBrush(Color.Black)
+            ' 设置抗锯齿模式
+            graphics.SmoothingMode = Drawing2D.SmoothingMode.AntiAlias
+            ' 在位图上绘制文字
+            graphics.DrawString(ComboBox1.Text, font, brush, New PointF(14, 30))
+            graphics.DrawString("启用：" & DateTimePicker1.Value.ToString("yyyy-MM-dd HH:mm"), font, brush, New PointF(14, 80))
+            graphics.DrawString("失效：" & DateTimePicker2.Value.ToString("yyyy-MM-dd HH:mm"), font, brush, New PointF(14, 130))
+            graphics.DrawString("签名：" & TextBox2.Text, font, brush, New PointF(14, 180))
+            ' 设置文字对齐方式
+            Dim format As New StringFormat With {
+                .Alignment = StringAlignment.Far
+            }
+            ' 绘制矩形框
+            Dim rect As New RectangleF(14, 30, 342, 100)
+            graphics.DrawString("有效期：" & Str(NumericUpDown1.Value) & ComboBox2.Text, font, brush, rect, format)
+        End Using
+
+        If PictureBox1.Enabled Then
+            PictureBox1.Image = GetRoundedImage(bitmap, 30)
+        End If
+    End Sub
+
+    Private Shared Function GetRoundedImage(originalImage As Image, radius As Integer) As Image
+        Dim roundedImage As New Bitmap(originalImage.Width, originalImage.Height)
+        Using g As Graphics = Graphics.FromImage(roundedImage)
+            g.SmoothingMode = SmoothingMode.AntiAlias
+            Using path As New GraphicsPath()
+                path.AddArc(0, 0, radius * 2, radius * 2, 180, 90)
+                path.AddArc(originalImage.Width - radius * 2, 0, radius * 2, radius * 2, 270, 90)
+                path.AddArc(originalImage.Width - radius * 2, originalImage.Height - radius * 2, radius * 2, radius * 2, 0, 90)
+                path.AddArc(0, originalImage.Height - radius * 2, radius * 2, radius * 2, 90, 90)
+                g.SetClip(path)
+                g.DrawImage(originalImage, 0, 0)
+            End Using
+        End Using
+        Return roundedImage
     End Function
 End Class
