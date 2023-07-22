@@ -158,7 +158,6 @@ Public Class Form1
                 ComboBox2.SelectedItem = data.Item2
             End If
 
-            GenerateBitmap()
             trigger = 0
         End If
     End Sub
@@ -211,15 +210,21 @@ Public Class Form1
         If PictureBox1.Enabled Then
             PictureBox1.Image = Nothing
             Panel1.Width = 740
-            Me.Width = 804
+            Width = 804
             Button7.Text = "预览 >>"
+            ToolTip1.SetToolTip(Button7, "展开预览图。")
         Else
-            Me.Width = 1268
+            Width = 1268
             Panel1.Width = 1200
             PictureBox1.Image = GetRoundedImage(bitmap, 30)
-            Button7.Text = "<< 隐藏"
+            Button7.Text = "<< 收起"
+            ToolTip1.SetToolTip(Button7, "收起预览图。")
         End If
         PictureBox1.Enabled = Not PictureBox1.Enabled
+    End Sub
+
+    Private Sub TextBox2_TextChanged(sender As Object, e As EventArgs) Handles TextBox2.TextChanged
+        GenerateBitmap()
     End Sub
 
     Private Sub Button3_Click(sender As Object, e As EventArgs) Handles Button3.Click
@@ -353,7 +358,7 @@ Public Class Form1
             ' 设置文字颜色为黑色
             Dim brush As New SolidBrush(Color.Black)
             ' 设置抗锯齿模式
-            graphics.SmoothingMode = Drawing2D.SmoothingMode.AntiAlias
+            graphics.SmoothingMode = SmoothingMode.AntiAlias
             ' 在位图上绘制文字
             graphics.DrawString(ComboBox1.Text, font, brush, New PointF(14, 30))
             graphics.DrawString("启用：" & DateTimePicker1.Value.ToString("yyyy-MM-dd HH:mm"), font, brush, New PointF(14, 80))

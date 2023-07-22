@@ -42,8 +42,8 @@ Partial Class Form1
         Button6 = New Button()
         NumericUpDown1 = New NumericUpDown()
         ToolTip1 = New ToolTip(components)
-        PictureBox1 = New PictureBox()
         Button7 = New Button()
+        PictureBox1 = New PictureBox()
         Label6 = New Label()
         CType(NumericUpDown1, ComponentModel.ISupportInitialize).BeginInit()
         CType(PictureBox1, ComponentModel.ISupportInitialize).BeginInit()
@@ -163,7 +163,7 @@ Partial Class Form1
         TextBox2.Name = "TextBox2"
         TextBox2.Size = New Size(200, 38)
         TextBox2.TabIndex = 12
-        ToolTip1.SetToolTip(TextBox2, "输入使用者签名。")
+        ToolTip1.SetToolTip(TextBox2, "输入使用者签名，可留空。")
         ' 
         ' Button3
         ' 
@@ -172,7 +172,7 @@ Partial Class Form1
         Button3.Size = New Size(100, 46)
         Button3.TabIndex = 13
         Button3.Text = "保存"
-        ToolTip1.SetToolTip(Button3, "直接保存图片到软件目录。")
+        ToolTip1.SetToolTip(Button3, "保存图片到软件目录。")
         Button3.UseVisualStyleBackColor = True
         ' 
         ' Panel1
@@ -200,7 +200,7 @@ Partial Class Form1
         Button5.Size = New Size(30, 46)
         Button5.TabIndex = 16
         Button5.Text = "…"
-        ToolTip1.SetToolTip(Button5, "另存为（选择保存位置）")
+        ToolTip1.SetToolTip(Button5, "选择保存位置。")
         Button5.UseVisualStyleBackColor = True
         ' 
         ' Button6
@@ -222,6 +222,16 @@ Partial Class Form1
         NumericUpDown1.TabIndex = 18
         ToolTip1.SetToolTip(NumericUpDown1, "输入物品有效期的数字部分。")
         ' 
+        ' Button7
+        ' 
+        Button7.Location = New Point(560, 254)
+        Button7.Name = "Button7"
+        Button7.Size = New Size(150, 46)
+        Button7.TabIndex = 20
+        Button7.Text = "预览 >>"
+        ToolTip1.SetToolTip(Button7, "展开预览图。")
+        Button7.UseVisualStyleBackColor = True
+        ' 
         ' PictureBox1
         ' 
         PictureBox1.Enabled = False
@@ -230,15 +240,6 @@ Partial Class Form1
         PictureBox1.Size = New Size(384, 256)
         PictureBox1.TabIndex = 19
         PictureBox1.TabStop = False
-        ' 
-        ' Button7
-        ' 
-        Button7.Location = New Point(560, 254)
-        Button7.Name = "Button7"
-        Button7.Size = New Size(150, 46)
-        Button7.TabIndex = 20
-        Button7.Text = "预览 >>"
-        Button7.UseVisualStyleBackColor = True
         ' 
         ' Label6
         ' 
