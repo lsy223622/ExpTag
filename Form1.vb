@@ -1,6 +1,7 @@
 ﻿Imports System.Drawing.Drawing2D
 Imports System.Drawing.Imaging
 Imports System.Drawing.Printing
+Imports System.IO
 Imports Microsoft.VisualBasic.FileIO
 
 Public Class Form1
@@ -11,8 +12,19 @@ Public Class Form1
     Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         trigger = 0
 
+        ' 设置图像的 DPI
+        bitmap.SetResolution(96, 96)
+
         ' 指定CSV文件的路径
         Dim filePath As String = "data.csv"
+
+        ' 检查文件是否存在
+        If Not File.Exists(filePath) Then
+            ' 文件不存在，弹出提示窗口并退出程序
+            Dim message As String = "找不到文件 " & filePath & "。请确保文件存在软件目录下。"
+            MessageBox.Show(message, "文件不存在", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            Environment.Exit(1) ' 退出程序，并返回错误代码 1
+        End If
 
         ' 创建TextFieldParser对象，并设置适当的选项
         Using parser As New TextFieldParser(filePath)
@@ -138,18 +150,11 @@ Public Class Form1
     End Sub
 
     Private Sub Button2_Click(sender As Object, e As EventArgs) Handles Button2.Click
-        If trigger = 0 Then
+        If trigger = 0 And ComboBox1.SelectedIndex <> -1 Then
             trigger = 7
-
             Dim comboValue As String
-            If ComboBox1.SelectedIndex <> -1 Then
-                ' 获取选中项的值
-                comboValue = ComboBox1.SelectedItem.ToString()
-            Else
-                ' 使用自定义输入
-                comboValue = ComboBox1.Text
-            End If
-
+            ' 获取选中项的值
+            comboValue = ComboBox1.SelectedItem.ToString()
             ' 根据选中项的值查找对应行的其他字段数据
             Dim data As Tuple(Of Long, String) = Nothing
             If csvData.TryGetValue(comboValue, data) Then
@@ -157,6 +162,8 @@ Public Class Form1
                 NumericUpDown1.Value = Val(data.Item1)
                 ComboBox2.SelectedItem = data.Item2
             End If
+
+            GenerateBitmap()
 
             trigger = 0
         End If
@@ -209,14 +216,14 @@ Public Class Form1
     Private Sub Button7_Click(sender As Object, e As EventArgs) Handles Button7.Click
         If PictureBox1.Enabled Then
             PictureBox1.Image = Nothing
-            Panel1.Width = 740
-            Width = 804
+            Panel1.Width = CInt(368 * GetDPIScaleFactor())
+            Width = CInt(407 * GetDPIScaleFactor())
             Button7.Text = "预览 >>"
             ToolTip1.SetToolTip(Button7, "展开预览图。")
         Else
-            Width = 1268
-            Panel1.Width = 1200
-            PictureBox1.Image = GetRoundedImage(bitmap, 30)
+            Width = CInt(632 * GetDPIScaleFactor())
+            Panel1.Width = CInt(594 * GetDPIScaleFactor())
+            PictureBox1.Image = GetRoundedImage(bitmap, 20)
             Button7.Text = "<< 收起"
             ToolTip1.SetToolTip(Button7, "收起预览图。")
         End If
@@ -354,32 +361,33 @@ Public Class Form1
             ' 设置背景颜色为白色
             graphics.Clear(Color.White)
             ' 设置字体和字号
-            Dim font As New Font("微软雅黑", 11)
+            Dim font As New Font("微软雅黑", 22)
             ' 设置文字颜色为黑色
             Dim brush As New SolidBrush(Color.Black)
             ' 设置抗锯齿模式
             graphics.SmoothingMode = SmoothingMode.AntiAlias
             ' 在位图上绘制文字
-            graphics.DrawString(ComboBox1.Text, font, brush, New PointF(14, 30))
-            graphics.DrawString("启用：" & DateTimePicker1.Value.ToString("yyyy-MM-dd HH:mm"), font, brush, New PointF(14, 80))
-            graphics.DrawString("失效：" & DateTimePicker2.Value.ToString("yyyy-MM-dd HH:mm"), font, brush, New PointF(14, 130))
-            graphics.DrawString("签名：" & TextBox2.Text, font, brush, New PointF(14, 180))
+            graphics.DrawString(ComboBox1.Text, font, brush, New PointF(20, 30))
+            graphics.DrawString("启用：" & DateTimePicker1.Value.ToString("yyyy-MM-dd HH:mm"), font, brush, New PointF(20, 80))
+            graphics.DrawString("失效：" & DateTimePicker2.Value.ToString("yyyy-MM-dd HH:mm"), font, brush, New PointF(20, 130))
+            graphics.DrawString("签名：" & TextBox2.Text, font, brush, New PointF(20, 180))
             ' 设置文字对齐方式
             Dim format As New StringFormat With {
                 .Alignment = StringAlignment.Far
             }
             ' 绘制矩形框
-            Dim rect As New RectangleF(14, 30, 342, 100)
-            graphics.DrawString("有效期：" & Str(NumericUpDown1.Value) & ComboBox2.Text, font, brush, rect, format)
+            Dim rect As New RectangleF(20, 30, 344, 100)
+            graphics.DrawString("有效期: " & NumericUpDown1.Value & ComboBox2.Text, font, brush, rect, format)
         End Using
 
         If PictureBox1.Enabled Then
-            PictureBox1.Image = GetRoundedImage(bitmap, 30)
+            PictureBox1.Image = GetRoundedImage(bitmap, 20)
         End If
     End Sub
 
     Private Shared Function GetRoundedImage(originalImage As Image, radius As Integer) As Image
         Dim roundedImage As New Bitmap(originalImage.Width, originalImage.Height)
+        roundedImage.SetResolution(96, 96) ' 设置图像的 DPI
         Using g As Graphics = Graphics.FromImage(roundedImage)
             g.SmoothingMode = SmoothingMode.AntiAlias
             Using path As New GraphicsPath()
@@ -392,5 +400,14 @@ Public Class Form1
             End Using
         End Using
         Return roundedImage
+    End Function
+
+    Private Function GetDPIScaleFactor() As Single
+        ' 获取当前显示设备的 DPI 设置
+        Using g As Graphics = CreateGraphics()
+            Dim dpiX As Single = g.DpiX
+            Dim dpiY As Single = g.DpiY
+            Return dpiX / 96.0F ' 返回 DPI 缩放比例
+        End Using
     End Function
 End Class
