@@ -270,14 +270,30 @@ Public Class Form1
 
         ' 设置 PrintDocument 的打印页面内容
         AddHandler printDocument.PrintPage, Sub(senderObj As Object, args As PrintPageEventArgs)
-                                                args.Graphics.DrawImage(bitmap, 0, 0) ' 在打印页面上绘制图像
+                                                Dim printAreaWidth As Integer = args.PageBounds.Width - args.MarginBounds.Left - args.MarginBounds.Right
+                                                Dim printAreaHeight As Integer = args.PageBounds.Height - args.MarginBounds.Top - args.MarginBounds.Bottom
+
+                                                ' 计算缩放比例
+                                                Dim scaleX As Single = printAreaWidth / bitmap.Width
+                                                Dim scaleY As Single = printAreaHeight / bitmap.Height
+                                                Dim scale As Single = Math.Min(scaleX, scaleY)
+
+                                                ' 计算图像在打印页面上的位置
+                                                Dim printImageWidth As Integer = CInt(bitmap.Width * scale)
+                                                Dim printImageHeight As Integer = CInt(bitmap.Height * scale)
+                                                Dim printImageX As Integer = args.MarginBounds.Left + (printAreaWidth - printImageWidth) / 2
+                                                Dim printImageY As Integer = args.MarginBounds.Top + (printAreaHeight - printImageHeight) / 2
+
+                                                ' 在打印页面上绘制图像
+                                                args.Graphics.DrawImage(bitmap, New Rectangle(printImageX, printImageY, printImageWidth, printImageHeight))
+
                                                 args.HasMorePages = False ' 没有更多的页面需要打印
                                             End Sub
 
         ' 创建 PrintDialog 对象并设置 PrintDocument
         Dim printDialog As New PrintDialog With {
-            .Document = printDocument
-        }
+        .Document = printDocument
+    }
 
         ' 如果用户点击了打印按钮
         If printDialog.ShowDialog() = DialogResult.OK Then
@@ -285,6 +301,7 @@ Public Class Form1
             printDocument.Print()
         End If
     End Sub
+
 
     Private Sub UpdateTime()
         ' 获取当前的日期和时间
