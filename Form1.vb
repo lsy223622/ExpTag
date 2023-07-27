@@ -270,22 +270,27 @@ Public Class Form1
 
         ' 设置 PrintDocument 的打印页面内容
         AddHandler printDocument.PrintPage, Sub(senderObj As Object, args As PrintPageEventArgs)
-                                                Dim printAreaWidth As Integer = args.PageBounds.Width - args.MarginBounds.Left - args.MarginBounds.Right
-                                                Dim printAreaHeight As Integer = args.PageBounds.Height - args.MarginBounds.Top - args.MarginBounds.Bottom
+                                                ' 获取图像的实际尺寸（使用原始的 DPI）
+                                                Dim imageWidth As Single = bitmap.Width / bitmap.HorizontalResolution
+                                                Dim imageHeight As Single = bitmap.Height / bitmap.VerticalResolution
 
-                                                ' 计算缩放比例
-                                                Dim scaleX As Single = printAreaWidth / bitmap.Width
-                                                Dim scaleY As Single = printAreaHeight / bitmap.Height
+                                                ' 计算纸张的实际尺寸（使用打印的 DPI）
+                                                Dim pageWidth As Single = args.PageBounds.Width / printDocument.DefaultPageSettings.PrinterResolution.X
+                                                Dim pageHeight As Single = args.PageBounds.Height / printDocument.DefaultPageSettings.PrinterResolution.Y
+
+                                                ' 计算缩放比例，使图像适合纸张
+                                                Dim scaleX As Single = pageWidth / imageWidth
+                                                Dim scaleY As Single = pageHeight / imageHeight
                                                 Dim scale As Single = Math.Min(scaleX, scaleY)
 
                                                 ' 计算图像在打印页面上的位置
-                                                Dim printImageWidth As Integer = CInt(bitmap.Width * scale)
-                                                Dim printImageHeight As Integer = CInt(bitmap.Height * scale)
-                                                Dim printImageX As Integer = args.MarginBounds.Left + (printAreaWidth - printImageWidth) / 2
-                                                Dim printImageY As Integer = args.MarginBounds.Top + (printAreaHeight - printImageHeight) / 2
+                                                Dim printImageWidth As Single = imageWidth * scale * printDocument.DefaultPageSettings.PrinterResolution.X
+                                                Dim printImageHeight As Single = imageHeight * scale * printDocument.DefaultPageSettings.PrinterResolution.Y
+                                                Dim printImageX As Single = (args.PageBounds.Width - printImageWidth) / 2
+                                                Dim printImageY As Single = (args.PageBounds.Height - printImageHeight) / 2
 
                                                 ' 在打印页面上绘制图像
-                                                args.Graphics.DrawImage(bitmap, New Rectangle(printImageX, printImageY, printImageWidth, printImageHeight))
+                                                args.Graphics.DrawImage(bitmap, printImageX, printImageY, printImageWidth, printImageHeight)
 
                                                 args.HasMorePages = False ' 没有更多的页面需要打印
                                             End Sub
@@ -301,7 +306,6 @@ Public Class Form1
             printDocument.Print()
         End If
     End Sub
-
 
     Private Sub UpdateTime()
         ' 获取当前的日期和时间
